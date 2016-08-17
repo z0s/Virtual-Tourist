@@ -205,18 +205,10 @@ struct FlickrAPI {
                 //   let photoTitle = photoDictionary[FlickrResponseKeys.Title] as? String
                 
                 /* GUARD: Does our photo have a key for 'url_m'? */
-                guard let imageUrlString = photoDictionary[FlickrResponseKeys.MediumURL] as? String else {
+                guard (photoDictionary[FlickrResponseKeys.MediumURL] as? String) != nil else {
                     displayError("Cannot find key '\(FlickrResponseKeys.MediumURL)' in \(photoDictionary)")
                     return
                 }
-                
-                // if an image exists at the url, set the image and title
-                // let imageURL = NSURL(string: imageUrlString)
-                //  if let imageData = NSData(contentsOfURL: imageURL!) {
-                //                    performUIUpdatesOnMain {
-                //                        self.setUIEnabled(true)
-                //                        self.photoImageView.image = UIImage(data: imageData)
-                //                        self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
             }
         }
         
