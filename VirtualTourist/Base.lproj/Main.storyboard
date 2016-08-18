@@ -48,10 +48,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="122" height="98"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Js3-Y5-563">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="Js3-Y5-563">
                                                     <rect key="frame" x="0.0" y="0.0" width="122" height="98"/>
                                                 </imageView>
-                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="dY8-Ab-3Ef">
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="dY8-Ab-3Ef">
                                                     <rect key="frame" x="43" y="30" width="37" height="37"/>
                                                 </activityIndicatorView>
                                             </subviews>
@@ -162,4 +162,7 @@
             <point key="canvasLocation" x="255" y="-778"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="placeholder" width="5152" height="3864"/>
+    </resources>
 </document>
