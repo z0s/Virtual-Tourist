@@ -27,7 +27,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         mapView.scrollEnabled = false;
         mapView.userInteractionEnabled = false;
         mapView.setRegion(centeredRegion, animated: true)
-        mapView.addAnnotation(pin)
+        let annotation = PinAnnotation()
+        annotation.pin = pin
+        annotation.coordinate = pin.coordinate
+        mapView.addAnnotation(annotation)
         
         if let photos = pin.photos?.allObjects as? [Photo] {
             for photo in photos {
@@ -61,6 +64,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let photo = pin.photos?.allObjects[indexPath.row] as! Photo
         if let photoImageData = photo.imageData {
             cell.imageView.image = UIImage(data: photoImageData)
+        } else {
+            // no image data, need to download from web
+            cell.setLoading(true)
+            FlickrAPI.requestImageAtURL(NSURL(string: photo.url!)!, completion: { (image, error) in
+                if let image = image {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        if let visibleCell = collectionView.cellForItemAtIndexPath(indexPath) as? FlickrImageCell {
+                            visibleCell.setLoading(false)
+                            visibleCell.imageView.image = image
+                            visibleCell.layoutIfNeeded()
+                        }
+                        photo.imageData = UIImagePNGRepresentation(image)
+                        
+                        self.stack.saveContext()
+                    })
+                }
+            })
         }
         
         return cell
@@ -112,35 +132,24 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             stack.saveContext()
             
-            collectionView.reloadData()
+            //collectionView.reloadData()
             
             FlickrAPI.requestImagesAtPin(pin, completion: { (results, error) in
                 if results.count > 0 {
-                    dispatch_async(dispatch_get_main_queue(), { 
-                        self.pin?.photos = self.pin!.photos!.setByAddingObjectsFromArray(results)
-                        self.stack.saveContext()
-                        if let photos = self.pin.photos?.allObjects as? [Photo] {
-                            for photo in photos {
-                                FlickrAPI.requestImageAtURL(NSURL(string: photo.url!)!, completion: { (image, error) in
-                                    if let image = image {
-                                        photo.imageData = UIImagePNGRepresentation(image)
-                                        dispatch_async(dispatch_get_main_queue(), {
-                                            self.stack.saveContext()
-                                            self.collectionView.reloadData()
-                                        })
-                                    }
-                                })
-                            }
-                        }
+                    
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.collectionView.reloadData()
                         
                     })
                 }
+                
             })
-            
-        } else if newCollection.title == "Remove Selected Images" {
+        }
+        else if newCollection.title == "Remove Selected Images" {
             guard let selectedIndexPaths = collectionView.indexPathsForSelectedItems() where selectedIndexPaths.count > 0 else {
                 return
             }
+            
             
             collectionView.performBatchUpdates({
                 
@@ -153,16 +162,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                 
                 }, completion: { (finished) in
                     
-                    dispatch_async(dispatch_get_main_queue(), { 
+                    dispatch_async(dispatch_get_main_queue(), {
                         self.newCollection.title = "New Collection"
+                        
                     })
-                    
             })
-            
-            
-            
-            
         }
+        
     }
-    
 }
