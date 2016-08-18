@@ -14,6 +14,16 @@ class FlickrImageCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
+    var image: UIImage? {
+        didSet {
+            if image == nil {
+                imageView.image = UIImage(named: "placeholder")
+            } else {
+                imageView.image = image
+            }
+        }
+    }
+    
     override var selected: Bool {
         didSet {
             if selected {
@@ -35,7 +45,7 @@ class FlickrImageCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        imageView.image = nil
+        setLoading(false)
+        image = nil
     }
 }
