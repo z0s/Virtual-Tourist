@@ -8,39 +8,22 @@
 
 import Foundation
 import CoreData
-import MapKit
+import CoreLocation
 
 
-class Pin: NSManagedObject, MKAnnotation {
+class Pin: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-    private var coordinates: CLLocationCoordinate2D?
     var coordinate: CLLocationCoordinate2D {
-        
         set {
-            willChangeValueForKey("coordinate")
-            coordinates = newValue
-            
-            // set the new values of the lat and long
-            if let coord = coordinates {
-                latitude = coord.latitude
-                longitude = coord.longitude
-            }
-            
-            didChangeValueForKey("coordinate")
+            latitude = newValue.latitude
+            longitude = newValue.longitude
         }
         
         get {
-            if coordinates == nil {
-                coordinates = CLLocationCoordinate2DMake(latitude, longitude)
-            }
-            
-            return coordinates!
+           return CLLocationCoordinate2DMake(latitude, longitude)
         }
     }
-    
-    var title: String? = nil
-    var subtitle: String? = nil
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -53,8 +36,6 @@ class Pin: NSManagedObject, MKAnnotation {
         
         self.latitude = latitude
         self.longitude = longitude
-        
-        coordinate = CLLocationCoordinate2DMake(latitude as CLLocationDegrees, longitude as CLLocationDegrees)
     }
 }
 
