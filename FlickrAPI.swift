@@ -86,15 +86,20 @@ struct FlickrAPI {
             
             var photos = [Photo]()
             
-            for photoDictionary in photosArray {
-                if let id = photoDictionary[FlickrResponseKeys.ID] as? String, idDouble = Double(id), photoURL = photoDictionary[FlickrResponseKeys.MediumURL] as? String {
-                    let stack = (UIApplication.sharedApplication().delegate as! AppDelegate).stack
-                    let idNumber = NSNumber(double: idDouble)
-                    let photo = Photo(id: idNumber, url: photoURL, context: stack.context)
-                    photo.pin = pin
-                    photos.append(photo)
+            dispatch_async(dispatch_get_main_queue(), {
+                let stack = (UIApplication.sharedApplication().delegate as! AppDelegate).stack
+                for photoDictionary in photosArray {
+                    if let id = photoDictionary[FlickrResponseKeys.ID] as? String, idDouble = Double(id), photoURL = photoDictionary[FlickrResponseKeys.MediumURL] as? String {
+                        
+                        let idNumber = NSNumber(double: idDouble)
+                        let photo = Photo(id: idNumber, url: photoURL, context: stack.context)
+                        photo.pin = pin
+                        photos.append(photo)
+                    }
                 }
-            }
+                
+                stack.saveContext()
+            })
             
             if let completion = completion {
                 completion(results: photos, error: nil)
