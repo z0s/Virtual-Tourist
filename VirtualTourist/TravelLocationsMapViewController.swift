@@ -35,7 +35,12 @@ class TravelLocationMapsViewController: UIViewController, MKMapViewDelegate, UIG
         
         do {
             if let pins =  try stack.context.executeFetchRequest(fetchRequest) as? [Pin] {
-                mapView.addAnnotations(pins)
+                for pin in pins {
+                    let annotation = PinAnnotation()
+                    annotation.pin = pin
+                    annotation.coordinate = pin.coordinate
+                    mapView.addAnnotation(annotation)
+                }
             }
         } catch {
             
@@ -77,22 +82,26 @@ class TravelLocationMapsViewController: UIViewController, MKMapViewDelegate, UIG
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        mapView.deselectAnnotation(view.annotation, animated: false)
         if self.editing {
             // Remove pin from mapView and Core Data
-            let pin = view.annotation as! Pin
-            mapView.removeAnnotation(pin)
-            stack.context.deleteObject(pin)
-            stack.saveContext()
+            let annotation = view.annotation as! PinAnnotation
+            mapView.removeAnnotation(annotation)
+            if let pin = annotation.pin {
+                stack.context.deleteObject(pin)
+                stack.saveContext()
+            }
             mapView.layoutIfNeeded()
         } else {
             let photoAlbumVC = storyboard?.instantiateViewControllerWithIdentifier("PhotoAlbumViewController") as! PhotoAlbumViewController
-            let pin = view.annotation as! Pin
-            photoAlbumVC.pin = pin
+            let annotation = view.annotation as! PinAnnotation
+            photoAlbumVC.pin = annotation.pin
             navigationController?.pushViewController(photoAlbumVC, animated: true)
         }
     }
     
     var pin: Pin? = nil
+    var annotation: PinAnnotation? = nil
     
     func addPin(gesture: UILongPressGestureRecognizer) {
         let locationInMap = gesture.locationInView(mapView)
@@ -102,9 +111,13 @@ class TravelLocationMapsViewController: UIViewController, MKMapViewDelegate, UIG
         switch gesture.state {
         case .Began:
             pin = Pin(latitude: coord.latitude, longitude: coord.longitude, context: stack.context)
-            mapView.addAnnotation(pin!)
+            annotation = PinAnnotation()
+            annotation?.pin = pin
+            annotation?.coordinate = pin!.coordinate
+            mapView.addAnnotation(annotation!)
         case .Changed:
             pin?.coordinate = coord
+            annotation?.coordinate = coord
         case .Ended:
             FlickrAPI.requestImagesAtPin(pin!, completion: { (results, error) in
                 if results.count > 0 {
