@@ -131,17 +131,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             pin.photos = []
             
             stack.saveContext()
-            
-            //collectionView.reloadData()
+
             
             FlickrAPI.requestImagesAtPin(pin, completion: { (results, error) in
-                if results.count > 0 {
-                    
+                
                     dispatch_async(dispatch_get_main_queue(), {
                         self.collectionView.reloadData()
                         
                     })
-                }
                 
             })
         }
