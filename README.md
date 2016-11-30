@@ -7,7 +7,7 @@ Project developed for Udacity iOS Developer Nanodegree
 <br><b>Frameworks:</b> Core Data, MapKit, UIKit
 
 ## Questions?
-Send me an [email](mailto:macs4enthusiasts@gmail.com?subject=VirtualTourist).
+Send me an [email](mailto:developios5@gmail.com?subject=Virtual Tourist).
 
 ##Summary
 This app utilizes and handles API requests to obtain and display Photos using Flickr geolocation APIs and posts annotations on the map. This application uses REST APIs and parses JSON files and sorts photos in a collection view saving them to the Documents memory utilizing Core Data.
